@@ -1,0 +1,27 @@
+body {
+  background-color: #f8f9fa;
+}
+
+#canvas {
+  display: block;
+  background-color: #ffffff;
+  cursor: crosshair;
+}
+
+#canvas-wrapper {
+  background-color: #e9ecef;
+}
+
+#sidebar .small {
+  line-height: 1.4;
+}
+
+#distancia {
+  font-size: 0.95rem;
+}
+
+h2,
+h5,
+h6 {
+  color: #343a40;
+}
