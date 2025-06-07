@@ -32,7 +32,6 @@ class Visualizer(tk.Tk):
         self.status_label = ttk.Label(sidebar, text="Carregue um arquivo GeoJSON.", wraplength=280)
         self.status_label.pack(pady=5, anchor='w', fill=tk.X)
         
-        # NOVO: Labels para informações do grafo
         self.graph_info_label = ttk.Label(sidebar, text="Informações do Grafo", font=("TkDefaultFont", 10, "bold"))
         self.graph_info_label.pack(anchor='w', pady=(10,0))
         self.nodes_label = ttk.Label(sidebar, text="Nós (Vértices): -")
@@ -87,23 +86,46 @@ class Visualizer(tk.Tk):
         t0 = time.perf_counter()
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+        
+        # MUDANÇA PRINCIPAL AQUI
         for feat in data['features']:
+            geometry = feat.get('geometry')
+            if not geometry:
+                continue
+
             street = feat['properties'].get('name', '')
-            coords = feat['geometry']['coordinates']
-            for lon, lat in coords:
+            geom_type = geometry.get('type')
+            coords = geometry.get('coordinates')
+            
+            # Lista que conterá os pontos a serem processados
+            points_to_process = []
+
+            if geom_type == 'LineString':
+                points_to_process = coords
+            elif geom_type == 'Polygon':
+                # Para polígonos, as coordenadas são uma lista de anéis.
+                # Usamos apenas o primeiro anel (o contorno externo).
+                if coords and len(coords) > 0:
+                    points_to_process = coords[0]
+            
+            # Se não for um tipo de geometria que sabemos tratar, pulamos para a próxima feature
+            if not points_to_process:
+                continue
+
+            # Agora o processamento é seguro, pois points_to_process é uma lista simples de pontos
+            for lon, lat in points_to_process:
                 self.graph.add_node(str((lon, lat)), lon, lat)
-            for i in range(len(coords) - 1):
-                u_lon, u_lat = coords[i]
-                v_lon, v_lat = coords[i+1]
+            
+            for i in range(len(points_to_process) - 1):
+                u_lon, u_lat = points_to_process[i]
+                v_lon, v_lat = points_to_process[i+1]
                 w = haversine_distance(u_lat, u_lon, v_lat, v_lon)
                 self.graph.add_edge(str((u_lon, u_lat)), str((v_lon, v_lat)), w, street)
         
         load_time = (time.perf_counter() - t0) * 1000
         self.status_label.config(text=f"Grafo processado em {load_time:.2f} ms.\nSelecione o ponto inicial.")
 
-        # MUDANÇA: Exibir contagem de nós e arestas
         num_nodes = len(self.graph.nodes)
-        # Como cada aresta é adicionada duas vezes (uma para cada nó), dividimos a soma por 2
         num_edges = sum(len(n.edges) for n in self.graph.nodes.values()) // 2
         self.nodes_label.config(text=f"Nós (Vértices): {num_nodes}")
         self.edges_label.config(text=f"Arestas: {num_edges}")
