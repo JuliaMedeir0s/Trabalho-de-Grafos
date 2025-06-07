@@ -1,0 +1,12 @@
+@startuml
+participant User
+participant Visualizer
+participant Graph
+
+User -> Visualizer: selecionar ponto A
+Visualizer -> Graph: shortest_two_paths(A, B)
+activate Graph
+Graph --> Visualizer: paths + processing time
+Visualizer -> Visualizer: highlight_paths(paths)
+Visualizer -> Visualizer: show distances and street names
+@enduml

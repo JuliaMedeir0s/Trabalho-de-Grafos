@@ -1,0 +1,32 @@
+@startuml
+package graph {
+  class Node {
+    +id: str
+    +x: float
+    +y: float
+    +edges: List[Tuple[Node, float, str]]
+    +add_edge(dest: Node, weight: float, name: str)
+  }
+
+  class Graph {
+    -nodes: Dict[str, Node]
+    +add_node(id: str, x: float, y: float)
+    +add_edge(src_id: str, dst_id: str, w: float, name: str)
+    +shortest_path(start_id: str, end_id: str, method: str) -> List[Tuple[Node, Node, float, str]]
+    +shortest_two_paths(start_id: str, end_id: str, method: str) -> Tuple[List, List]
+  }
+}
+package visualizer {
+  class Visualizer {
+    +graph: Graph
+    +method: str
+    +load_map(file: str)
+    +draw()
+    +on_click(event)
+    +highlight_paths(p1, p2)
+  }
+}
+Graph "1" *-- "*" Node
+Node "1" *-- "*" Graph
+Visualizer ..> Graph
+@enduml

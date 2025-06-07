@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"id":"0","name":"Rua Exemplo"},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-43.93733, -19.91904],
+          [-43.93600, -19.91800]
+        ]
+      }
+    }
+  ]
+}
