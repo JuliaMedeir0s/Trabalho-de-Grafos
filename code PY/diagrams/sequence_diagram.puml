@@ -3,10 +3,18 @@ participant User
 participant Visualizer
 participant Graph
 
-User -> Visualizer: selecionar ponto A
-Visualizer -> Graph: shortest_two_paths(A, B)
+User -> Visualizer: selecionar ponto A (origem)
+Visualizer -> Visualizer: registra ponto A e aguarda seleção do ponto B
+
+User -> Visualizer: selecionar ponto B (destino)
+Visualizer -> User: confirmar busca do caminho ótimo?
+User -> Visualizer: confirma busca
+
+Visualizer -> Graph: shortest_two_paths(A, B, método selecionado)
 activate Graph
-Graph --> Visualizer: paths + processing time
-Visualizer -> Visualizer: highlight_paths(paths)
-Visualizer -> Visualizer: show distances and street names
+Graph --> Visualizer: caminhos encontrados (ótimo e secundário), tempo de processamento
+
+Visualizer -> Visualizer: destacar caminhos no mapa
+Visualizer -> Visualizer: exibir distâncias e nomes das ruas
+Visualizer -> User: exibir resultados
 @enduml
